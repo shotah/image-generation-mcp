@@ -16,7 +16,7 @@ const (
 
 const (
 	nextGenerate = `Next: photo_generate(prompt="a red bicycle leaning on a brick wall")`
-	nextEdit     = `Next: photo_edit(prompt="make it watercolor", source_image="<base64>")`
+	nextEdit     = `Next: photo_edit(prompt="add a hat", source_path="<IMAGE_OUTPUT_DIR/file.jpg>")`
 )
 
 // ToolNames is the registered catalog (tests lock naming).

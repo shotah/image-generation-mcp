@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -72,6 +74,48 @@ func TestMCPCallGenerateMissingKey(t *testing.T) {
 	text, isErr := callTool(t, s, ToolGenerate, map[string]any{"prompt": "cat"})
 	if !isErr || !strings.Contains(text, EnvImageAPIKey) {
 		t.Fatalf("expected missing-key teach-in, got err=%v text=%s", isErr, text)
+	}
+}
+
+func TestMCPCallEditFromPath(t *testing.T) {
+	root := t.TempDir()
+	t.Setenv(EnvImageOutputDir, root)
+	src := []byte{0x89, 0x50, 0x4e, 0x47}
+	path := filepath.Join(root, "face.png")
+	if err := os.WriteFile(path, src, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	png := []byte{0x89, 0x50}
+	stub := &stubProvider{res: Result{MIME: mimePNG, Data: png, Model: DefaultModel}}
+	old := newProvider
+	t.Cleanup(func() { newProvider = old })
+	newProvider = func() (Provider, error) { return stub, nil }
+
+	s := newToolServer(t)
+	text, isErr := callTool(t, s, ToolEdit, map[string]any{
+		"prompt":      "add a hat",
+		"source_path": path,
+	})
+	if isErr {
+		t.Fatalf("photo_edit error: %s", text)
+	}
+	if !bytes.Equal(stub.last.SourceData, src) {
+		t.Fatalf("source = %v", stub.last.SourceData)
+	}
+	if stub.last.SourceMIME != mimePNG {
+		t.Fatalf("mime = %q", stub.last.SourceMIME)
+	}
+}
+
+func TestMCPCallEditRefusesOutsidePath(t *testing.T) {
+	t.Setenv(EnvImageOutputDir, t.TempDir())
+	s := newToolServer(t)
+	text, isErr := callTool(t, s, ToolEdit, map[string]any{
+		"prompt":      "add a hat",
+		"source_path": "/etc/hostname",
+	})
+	if !isErr || !strings.Contains(text, "source_path") {
+		t.Fatalf("want refuse, got err=%v text=%s", isErr, text)
 	}
 }
 

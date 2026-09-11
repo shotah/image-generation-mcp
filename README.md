@@ -24,9 +24,11 @@ Naming contract: [ai-gantry `docs/mcp-naming.md`](https://github.com/shotah/ai-g
 | Tool | Host name | Auth | What it does |
 | --- | --- | --- | --- |
 | `photo_generate` | `image__photo_generate` | Gemini / Vertex | Text prompt → PNG (MCP image + JSON summary) |
-| `photo_edit` | `image__photo_edit` | Gemini / Vertex | Prompt + base64 source → edited PNG |
+| `photo_edit` | `image__photo_edit` | Gemini / Vertex | Prompt + `source_path` (or base64) → edited PNG |
 
 JSON summary fields: `prompt`, `model`, `mime`, `bytes`, optional `path` / `note`. Base64 is **not** in the text (hosts truncate tool results). MCP clients that understand image content still get the bytes.
+
+`photo_edit` prefers `source_path` inside `IMAGE_OUTPUT_DIR` so `pendant__avatar_get` → `photo_edit` → `pendant__avatar_update` stays on disk (hosts truncate base64). `source_image` is still accepted for hosts that keep bytes.
 
 Not in v1: extra providers (`IMAGE_PROVIDER` other than `gemini`), URL fetch of `source_image`, Drive upload.
 

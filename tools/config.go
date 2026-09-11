@@ -9,10 +9,11 @@ import (
 // text must stay aligned with these names.
 const (
 	// EnvImageAPIKey wins so a local crane mouth can still pin Gemini for images.
-	EnvImageAPIKey    = "IMAGE_API_KEY" //nolint:gosec // G101: env var name, not a credential
-	EnvImageModel     = "IMAGE_MODEL"
-	EnvImageProvider  = "IMAGE_PROVIDER"
-	EnvImageOutputDir = "IMAGE_OUTPUT_DIR"
+	EnvImageAPIKey     = "IMAGE_API_KEY" //nolint:gosec // G101: env var name, not a credential
+	EnvImageModel      = "IMAGE_MODEL"
+	EnvImageProvider   = "IMAGE_PROVIDER"
+	EnvImageOutputDir  = "IMAGE_OUTPUT_DIR"
+	EnvPendantImageDir = "PENDANT_IMAGE_DIR"
 
 	// EnvLLMAPIKey / EnvLLMModel are the crane mouth. Used when image-specific
 	// vars are blank. Already crane fields — not re-asked as required.

@@ -26,7 +26,7 @@ Rules:
 4. **No dual aliases.** No `image_*` synonym.
 5. Tests: every name matches `^[a-z]+_[a-z]+` and does **not** start with `image`.
 
-Descriptions lead with agent intent. Args are snake_case (`prompt`, `aspect_ratio`, `source_image`). Teach-in errors name the next call (`Next: photo_generate(prompt="…")`).
+Descriptions lead with agent intent. Args are snake_case (`prompt`, `aspect_ratio`, `source_path`, `source_image`). Teach-in errors name the next call (`Next: photo_edit(prompt="…", source_path="…")`).
 
 ## Auth
 
@@ -42,3 +42,4 @@ Same key family as `mcp-gemini-search`: `IMAGE_API_KEY` wins, else crane `LLM_AP
 | Stdio MCP scaffold | `feeds-mcp` / `google-maps-mcp` |
 | Gemini API key (search, not images) | `mcp-gemini-search` |
 | Workspace OAuth (not this binary) | `google-mcp` |
+| Pendant face / wallpaper / mood | `pendant-mcp` |

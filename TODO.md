@@ -4,9 +4,13 @@ Human creates the GitHub repo (`shotah/image-generation-mcp`) and `git init`. Do
 
 ## Follow-ups (not this binary)
 
-- Yard ingest: gantree `PACKAGES` + `HOST_SHAPE.image` so the console can grant `image`.
-- ai-gantry: when MCP returns `ImageContent`, skip stuffing base64 into the model context and `SendPhoto` on Telegram/Discord/Slack. Today the JSON summary survives truncation; the picture does not auto-send.
 - Extra `IMAGE_PROVIDER` backends (OpenAI, etc.) behind the existing `Provider` interface. Keep server id `image` and tools `photo_generate` / `photo_edit`.
+- Pendant mailbox outbound photos (Telegram/Discord/Slack host follow-up is in ai-gantry).
+
+## Done elsewhere
+
+- Yard ingest: gantree `PACKAGES` + `HOST_SHAPE.image`.
+- ai-gantry: MCP `ImageContent` stays off the model prompt; mouths `SendPhoto`.
 
 ## Do not
 

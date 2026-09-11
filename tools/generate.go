@@ -46,10 +46,11 @@ func registerGenerate(s *mcpserver.MCPServer) {
 
 func registerEdit(s *mcpserver.MCPServer) {
 	tool := mcp.NewTool(ToolEdit,
-		mcp.WithDescription("Edit an existing image with a text prompt. Pass source_image as base64. Returns PNG bytes plus a short JSON summary. Use for “make this watercolor”, “add a hat”. Not for creating from scratch — use photo_generate."),
+		mcp.WithDescription("Edit an existing image with a text prompt. Pass source_path from photo_generate or pendant__avatar_get (must sit inside IMAGE_OUTPUT_DIR). Use for “make this watercolor”, “add a hat”. Not for creating from scratch — use photo_generate."),
 		mcp.WithString("prompt", mcp.Required(), mcp.Description("How to change the image.")),
-		mcp.WithString("source_image", mcp.Required(), mcp.Description("Source image as base64 (raw or data:image/…;base64,…).")),
-		mcp.WithString("source_mime", mcp.Description("Optional MIME of source_image (default image/png).")),
+		mcp.WithString("source_path", mcp.Description("File on disk from photo_generate or pendant__avatar_get. Must resolve inside IMAGE_OUTPUT_DIR (or PENDANT_IMAGE_DIR). This is the v1 handoff.")),
+		mcp.WithString("source_image", mcp.Description("Optional base64 when the host keeps image bytes. Prefer source_path.")),
+		mcp.WithString("source_mime", mcp.Description("Optional MIME of the source (default from the file ext, else image/png).")),
 		mcp.WithString("aspect_ratio", mcp.Description("Optional. One of 1:1, 2:3, 3:2, 3:4, 4:3, 9:16, 16:9, 21:9.")),
 		mcp.WithString("size", mcp.Description("Optional. 1K (default), 2K, or 4K.")),
 	)
@@ -89,15 +90,16 @@ func parseGenerateArgs(request mcp.CallToolRequest, edit bool) (Request, error) 
 		return Request{}, err
 	}
 	if edit {
-		src, err := decodeSourceImage(request.GetString("source_image", ""))
+		src, mime, err := readEditSource(
+			request.GetString("source_path", ""),
+			request.GetString("source_image", ""),
+			request.GetString("source_mime", ""),
+		)
 		if err != nil {
 			return Request{}, err
 		}
 		req.SourceData = src
-		req.SourceMIME = strings.TrimSpace(request.GetString("source_mime", ""))
-		if req.SourceMIME == "" {
-			req.SourceMIME = mimePNG
-		}
+		req.SourceMIME = mime
 	}
 	return req, nil
 }
